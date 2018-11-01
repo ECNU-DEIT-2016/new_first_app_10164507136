@@ -24,7 +24,7 @@ li material-fab {
   text-decoration: line-through;
 }
 
-#names{
+.names{
   height: 40px;
   width:100px;
   background-color: white;
@@ -32,4 +32,8 @@ li material-fab {
   font: 20px sans-serif;
   vertical-align: middle;
   margin-bottom: 20px;
+}
+
+#leastName{
+  width: 300px;
 }

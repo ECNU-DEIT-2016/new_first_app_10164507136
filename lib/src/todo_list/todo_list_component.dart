@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:html';
 
+
 import 'package:angular/angular.dart';
 import 'package:angular_components/angular_components.dart';
-
+import 'students.dart';
 import 'todo_list_service.dart';
 
 @Component(
@@ -23,7 +24,11 @@ import 'todo_list_service.dart';
   ],
   providers: [const ClassProvider(TodoListService)],
 )
+
+
 class TodoListComponent implements OnInit {
+
+var names=[students("陈瑶", 0),students("朱子恒", 0),students("周嘉翔", 0),students("唐莉雯", 0),students("张静雅", 0),students("龙晶毅", 0),students("朱鹏伟", 0),students("戚晓颖", 0),students("郑可欣", 0),students("李典康", 0),students("吴松二", 0),students("蔡心蕊", 0),students("赵世宇", 0)];
 
   @override
   Future<Null> ngOnInit() async {
@@ -31,12 +36,21 @@ class TodoListComponent implements OnInit {
   }
 
   void add() {
-   // items.add(newTodo);
-   // newTodo = '';
     var random=Random();
-  var number=random.nextInt(13);
-   var lists=["陈瑶","朱子恒","周嘉翔","唐莉雯","张静雅","龙晶毅","朱鹏伟","戚晓颖","郑可欣","李典康","吴松二","蔡心蕊","赵世宇"];
-  querySelector('#tips').text='请'+lists[number]+"同学回答！";
-  
+    var number=random.nextInt(13);
+   
+    querySelector('#tips').text='请'+names[number].name+"同学回答！";  
+    names[number].times++;
+  }
+
+  void addLeast(){
+    num min=0;
+
+    for(var i=0;i<13;i++){
+      if(names[min].times>names[i].times) min=i;
+    }
+
+    querySelector('#tips').text='请'+names[min].name+"同学回答！";  
+    names[min].times++; 
   }
 }
