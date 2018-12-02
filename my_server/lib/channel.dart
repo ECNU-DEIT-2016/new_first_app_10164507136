@@ -1,5 +1,7 @@
 import 'my_server.dart';
 import 'dart:math';
+import 'package:sqljocky5/sqljocky.dart';
+import 'dart:async';
 
 /// This type initializes an application.
 ///
@@ -39,11 +41,29 @@ class MyServerChannel extends ApplicationChannel {
 }
 class MyController extends ResourceController {
   final List<String> things = ['陈瑶', '朱子恒','周嘉翔','唐莉雯','张静雅','龙晶毅','朱鹏伟','戚晓颖','郑可欣','李典康','吴松二','蔡心蕊','赵世宇'];
-  
+  List<String> Items=[];
 
   @Operation.get()
   Future<Response> getThings() async {
-    return Response.ok(things[getRandomNum()]);
+    var s = ConnectionSettings(
+    user: "root",
+    password: "qingfeng889",
+    host: "localhost",
+    port: 3306,
+    db: "mysql",
+  );
+    print("Opening connection ...");
+  var conn = await MySqlConnection.connect(s);
+  print("Opened connection!");
+
+  // Items.add(things[getRandomNum()]);
+    await connected(conn);
+    String output="";
+    for(int i=0;i<Items.length;i++){
+      output=output+Items[i]+"              ";
+    }
+    print(output);
+    return Response.ok(output);
   }
 
   @Operation.get('id')
@@ -58,5 +78,18 @@ class MyController extends ResourceController {
     var random=Random();
     int number=random.nextInt(13);
     return number;
+  }
+
+  Future<void> connected(MySqlConnection conn) async{
+    
+   Results results = await conn.execute('select name, email from users');
+   results.forEach((Row row) {
+     Items.add('Name:${row[0]} email:${row[1]}');
+     //Items.add('email: ${row[1]}');
+     
+  //print('Name: ${row[0]}, email: ${row[1]}');
+  //print('Name: ${row.name}, email: ${row.email}');
+});
+  await conn.close();
   }
 }
