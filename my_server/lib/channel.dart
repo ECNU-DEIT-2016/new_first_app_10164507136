@@ -34,11 +34,55 @@ class MyServerChannel extends ApplicationChannel {
 
   
     router
-      .route("/users/[:id]").link(()=>MyController());   
+      .route("/users/[:id]").link(()=>MyController()); 
+
+    router  
+      .route("/random/[:id]").link(()=>RandomController());
 
     return router;
   }
 }
+
+class RandomController extends ResourceController{
+
+    final List<String> things = ['陈瑶', '朱子恒','周嘉翔','唐莉雯','张静雅','龙晶毅','朱鹏伟','戚晓颖','郑可欣','李典康','吴松二','蔡心蕊','赵世宇'];
+  List<String> Items=[];
+
+  @Operation.get()
+  Future<Response> getThings() async {
+    var s = ConnectionSettings(
+    user: "deit2016",
+    password: "deit2016@ecnu",
+    host: "www.muedu.org",
+    port: 3306,
+    db: "deit2016db_10164507136",
+  );
+    print("Opening connection ...");
+  var conn = await MySqlConnection.connect(s);
+  print("Opened connection!");
+
+  // Items.add(things[getRandomNum()]);
+    await connected(conn,Items);
+    Random random=new Random();
+    int num=random.nextInt(Items.length);
+    return Response.ok(Items[num]);
+  }
+
+  @Operation.get('id')
+  Future<Response> getThing(@Bind.path('id') int id) async {
+    if (id < 0 || id >= things.length) {
+      return Response.notFound();
+    }
+    return Response.ok(things[id]);
+  }
+
+  int getRandomNum(){
+    var random=Random();
+    int number=random.nextInt(13);
+    return number;
+  }
+}
+
 class MyController extends ResourceController {
   final List<String> things = ['陈瑶', '朱子恒','周嘉翔','唐莉雯','张静雅','龙晶毅','朱鹏伟','戚晓颖','郑可欣','李典康','吴松二','蔡心蕊','赵世宇'];
   List<String> Items=[];
@@ -46,23 +90,23 @@ class MyController extends ResourceController {
   @Operation.get()
   Future<Response> getThings() async {
     var s = ConnectionSettings(
-    user: "root",
-    password: "qingfeng889",
-    host: "localhost",
+    user: "deit2016",
+    password: "deit2016@ecnu",
+    host: "www.muedu.org",
     port: 3306,
-    db: "mysql",
+    db: "deit2016db_10164507136",
   );
     print("Opening connection ...");
   var conn = await MySqlConnection.connect(s);
   print("Opened connection!");
 
   // Items.add(things[getRandomNum()]);
-    await connected(conn);
+    await connected(conn,Items);
     String output="";
     for(int i=0;i<Items.length;i++){
       output=output+Items[i]+"              ";
     }
-    print(output);
+    //print(output);
     return Response.ok(output);
   }
 
@@ -80,7 +124,10 @@ class MyController extends ResourceController {
     return number;
   }
 
-  Future<void> connected(MySqlConnection conn) async{
+
+}
+
+  Future<void> connected(MySqlConnection conn, List Items) async{
     
    Results results = await conn.execute('select name, email from users');
    results.forEach((Row row) {
@@ -92,4 +139,3 @@ class MyController extends ResourceController {
 });
   await conn.close();
   }
-}
